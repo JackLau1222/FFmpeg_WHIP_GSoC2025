@@ -47,15 +47,15 @@ docker run --rm -it -p 1935:1935 -p 1985:1985 -p 8080:8080 \
 To download the code and build FFmpeg, you can use the following command.
 ```shell
 cd ~/git
-git clone -b master https://github.com/ossrs/ffmpeg-webrtc.git
-cd ffmpeg-webrtc
-./configure --enable-muxer=whip --enable-openssl --enable-version3 \
+git clone https://git.ffmpeg.org/ffmpeg.git
+cd ffmpeg
+./configure --enable-openssl --enable-version3 \
     --enable-libx264 --enable-gpl --enable-libopus
 make -j
 ```
 Capture your screen, and measure the end-to-end latency (use stopwatch).
 ```shell
-~/git/ffmpeg-webrtc/ffmpeg -f avfoundation -framerate 25 -pixel_format yuyv422 -i "2:0" \
+ffmpeg -f avfoundation -framerate 25 -pixel_format yuyv422 -i "2:0" \
     -vcodec libx264 -pix_fmt yuv420p -profile:v baseline -preset:v ultrafast \
     -b:v 800k -s 1024x576 -r 25 -g 50 -tune zerolatency -threads 1 -bf 0 \
     -acodec libopus -ar 48000 -ac 2 \
