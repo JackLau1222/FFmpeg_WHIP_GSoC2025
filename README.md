@@ -108,17 +108,3 @@ I would like to express my gratitude to my mentors Steven Liu and Jun Zhao, to W
     <p>[3] https://github.com/FFmpeg/FFmpeg/commit/167e343bbe75515a80db8ee72ffa0c607c944a00</p>
     <p>[4] https://github.com/FFmpeg/FFmpeg/commits?author=JackLau1222&since=2025-06-01&until=2025-08-28</p>
 </div>
-
-<style>
-.references {
-    margin-top: 2em;
-    border-top: 1px solid #ccc;
-    padding-top: 1em;
-    font-size: 0.9em;
-}
-.references p {
-    margin: 0.5em 0;
-    text-indent: -2em;
-    padding-left: 2em;
-}
-</style>
