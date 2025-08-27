@@ -10,7 +10,7 @@
 
 ## Project Infomation:
 
-### Project Name: [Implementation of WHIP (WebRTC-HTTP Ingestion Protocol) in FFmpeg](https://summerofcode.withgoogle.com/programs/2025/projects/CjXkqCQX)
+### Project Name: Implementation of WHIP (WebRTC-HTTP Ingestion Protocol) in FFmpeg<sup>[1]</sup>
 
 ### Mentor: Steven Liu, Jun Zhao
 
@@ -22,7 +22,7 @@
 
 This project aims to add WebRTC (Real-Time Communication) muxer that supports sub-second latency streaming according to the WHIP (WebRTC-HTTP ingestion protocol) specification.
 
-Before GSoC, the initial [WHIP patch](https://github.com/ossrs/ffmpeg-webrtc/tree/patch/whip/v1) were written by Winlin and many other RTC developers.
+Before GSoC, the initial WHIP patch was written by Winlin and many other RTC developers.
 
 My first GSoC work is to refactor and improve code until it can be merged into FFmpeg.
 
@@ -37,10 +37,33 @@ My first GSoC work is to refactor and improve code until it can be merged into F
 
 This WHIP muxer and openssl DTLS has been successfully merged into FFmpeg and released in FFmpeg 8.0 version
 
-You could refer to the following introduction to test the WHIP,
-https://github.com/ossrs/ffmpeg-webrtc/discussions/49
+Using SRS as an example, let’s try pushing a WHIP stream with FFmpeg and measuring the latency.<sup>[2]</sup>
+```shell
+ip="192.168.3.85"
+docker run --rm -it -p 1935:1935 -p 1985:1985 -p 8080:8080 \
+    --env CANDIDATE=$ip -p 8000:8000/udp \
+    ossrs/srs:5 ./objs/srs -c conf/rtc2rtmp.conf
+```
+To download the code and build FFmpeg, you can use the following command.
+```shell
+cd ~/git
+git clone -b master https://github.com/ossrs/ffmpeg-webrtc.git
+cd ffmpeg-webrtc
+./configure --enable-muxer=whip --enable-openssl --enable-version3 \
+    --enable-libx264 --enable-gpl --enable-libopus
+make -j
+```
+Capture your screen, and measure the end-to-end latency (use stopwatch).
+```shell
+~/git/ffmpeg-webrtc/ffmpeg -f avfoundation -framerate 25 -pixel_format yuyv422 -i "2:0" \
+    -vcodec libx264 -pix_fmt yuv420p -profile:v baseline -preset:v ultrafast \
+    -b:v 800k -s 1024x576 -r 25 -g 50 -tune zerolatency -threads 1 -bf 0 \
+    -acodec libopus -ar 48000 -ac 2 \
+    -f whip "http://localhost:1985/rtc/v1/whip/?app=live&stream=livestream"
+```
+After publishing stream to SRS, you can play the WHIP stream in web browser such as Chrome, using srs-player.
 
-Then you'll find that it can achieve latency as low as 150ms:
+Then you'll find that it can achieve latency around 150ms:
 ![latency](./latency.png)
 
 ## What's left to do
@@ -55,8 +78,8 @@ Then you'll find that it can achieve latency as low as 150ms:
 
 Merged:
 
-- [The basic WHIP muxer and DTLS support](https://github.com/FFmpeg/FFmpeg/commit/167e343bbe75515a80db8ee72ffa0c607c944a00)
-- [Many fixes and improvments](https://github.com/FFmpeg/FFmpeg/commits?author=JackLau1222&since=2025-06-01&until=2025-08-25)
+- The basic WHIP muxer and DTLS support<sup>[3]</sup>
+- [Many fixes and improvments]<sup>[4]</sup>
 
 Waiting for merge:
 - NACK, RTX
@@ -76,3 +99,26 @@ Waiting for merge:
 As a newcomer to programming, I feel very fortunate to work alongside so many experienced developers and contribute together to open source. The excitement and sense of achievement when seeing my code merged upstream is truly unparalleled.
 
 I would like to express my gratitude to my mentors Steven Liu and Jun Zhao, to Winlin as the initial author of WHIP, and to the many RTC developers and FFmpeg maintainers for their support and guidance.
+
+
+<div class="references">
+    <h2>References</h2>
+    <p>[1] https://summerofcode.withgoogle.com/programs/2025/projects/CjXkqCQX</p>
+    <p>[2] https://github.com/ossrs/ffmpeg-webrtc/discussions/37</p>
+    <p>[3] https://github.com/FFmpeg/FFmpeg/commit/167e343bbe75515a80db8ee72ffa0c607c944a00</p>
+    <p>[4] https://github.com/FFmpeg/FFmpeg/commits?author=JackLau1222&since=2025-06-01&until=2025-08-28</p>
+</div>
+
+<style>
+.references {
+    margin-top: 2em;
+    border-top: 1px solid #ccc;
+    padding-top: 1em;
+    font-size: 0.9em;
+}
+.references p {
+    margin: 0.5em 0;
+    text-indent: -2em;
+    padding-left: 2em;
+}
+</style>
