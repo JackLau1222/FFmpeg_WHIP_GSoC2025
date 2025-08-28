@@ -42,7 +42,7 @@ Using SRS as an example, let’s try pushing a WHIP stream with FFmpeg and measu
 ip="192.168.3.85"
 docker run --rm -it -p 1935:1935 -p 1985:1985 -p 8080:8080 \
     --env CANDIDATE=$ip -p 8000:8000/udp \
-    ossrs/srs:5 ./objs/srs -c conf/rtc2rtmp.conf
+    ossrs/srs:6 ./objs/srs -c conf/rtc2rtmp.conf
 ```
 To download the code and build FFmpeg, you can use the following command.
 ```shell
